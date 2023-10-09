@@ -1,0 +1,5 @@
+python==3.6
+torch==1.4.0
+tensorflow==2.4.0
+gym==0.17.0
+mujoco-py==1.50.1.1
