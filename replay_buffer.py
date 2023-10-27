@@ -34,10 +34,6 @@ class ReplayBuffer(object):
         self.buffer_position = 0
         self.size = 0
 
-    def append_to_buffer(self):
-        # TODO (do we need this for offline RL?)
-        pass
-
     def random_sample(self, batch_size: int):
         rand_index = np.random.randint(0, self.size, size=batch_size)
         sample = [

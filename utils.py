@@ -35,6 +35,22 @@ class DefaultParams:
     NORMALIZE = True
     NORM_EPSILON = 1e-3
 
+    @staticmethod
+    def to_td3_bc_kwargs(state_dim, action_dim, max_action):
+        return {
+            "state_dim": state_dim,
+            "action_dim": action_dim,
+            "max_action": max_action,
+            "discount": DefaultParams.DISCOUNT_FACTOR,
+            "tau": DefaultParams.TAU,
+            # TD3
+            "policy_noise": DefaultParams.POLICY_NOISE * max_action,
+            "noise_clip": DefaultParams.NOISE_CLIP_RANGE * max_action,
+            "policy_freq": DefaultParams.POLICY_UPDATE_FREQ,
+            # TD3 + BC
+            "alpha": DefaultParams.ALPHA,
+        }
+
 
 def move_to_device_ol_list(
     tensors: [torch.FloatTensor] | [torch.Tensor],
