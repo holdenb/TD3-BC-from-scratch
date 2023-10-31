@@ -115,7 +115,7 @@ def main() -> None:
         **DefaultParams.to_td3_bc_kwargs(state_dim, action_dim, max_action)
     )
 
-    train_policy(policy)
+    train_policy(policy, replay_buffer, mean, std)
 
     env.close()
     return 0
