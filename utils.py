@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from collections import deque
 
 
@@ -53,10 +52,10 @@ class DefaultParams:
 
 
 def move_to_device_ol_list(
-    tensors: [torch.FloatTensor] | [torch.Tensor],
+    tensors,
 ) -> None:
     deque(map(lambda x: move_to_device(x), tensors), maxlen=0)
 
 
-def move_to_device(obj: torch.FloatTensor | torch.Tensor | nn.Module) -> None:
+def move_to_device(obj) -> None:
     obj.to(__DEVICE)

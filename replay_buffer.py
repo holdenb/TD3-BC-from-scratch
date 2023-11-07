@@ -4,12 +4,12 @@ import numpy as np
 import utils
 
 
-class __D4RLDatasetKeys:
-    __STATE = "observations"
-    __ACTIONS = "actions"
-    __NEXT_STATE = "next_observations"
-    __REWARD = "rewards"
-    __NOT_DONE = "terminals"
+class D4RLDatasetKeys:
+    STATE = "observations"
+    ACTIONS = "actions"
+    NEXT_STATE = "next_observations"
+    REWARD = "rewards"
+    NOT_DONE = "terminals"
 
 
 class ReplayBuffer(object):
@@ -54,14 +54,12 @@ class ReplayBuffer(object):
         return (mean, std)
 
     def states_from_D4RL_dataset(self, dataset: dict[str, np.ndarray]) -> None:
-        self.state = dataset[__D4RLDatasetKeys.__STATE]
-        self.action = dataset[__D4RLDatasetKeys.__ACTIONS]
+        self.state = dataset[D4RLDatasetKeys.STATE]
+        self.action = dataset[D4RLDatasetKeys.ACTIONS]
 
-        self.next_state = dataset[__D4RLDatasetKeys.__NEXT_STATE]
+        self.next_state = dataset[D4RLDatasetKeys.NEXT_STATE]
 
-        self.reward = dataset[__D4RLDatasetKeys.__REWARD].reshape(-1, 1)
-        self.not_done = 1.0 - dataset[__D4RLDatasetKeys.__NOT_DONE].reshape(
-            -1, 1
-        )
+        self.reward = dataset[D4RLDatasetKeys.REWARD].reshape(-1, 1)
+        self.not_done = 1.0 - dataset[D4RLDatasetKeys.NOT_DONE].reshape(-1, 1)
 
         self.size = self.state.shape[0]

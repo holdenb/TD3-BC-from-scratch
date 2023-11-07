@@ -78,9 +78,6 @@ def train_policy(
             np.save(f"./results/{results_filename}", evaluations)
 
 
-# TODO add a flag to capture the duration of each training & output .npy
-
-
 def main(args) -> None:
     env: gym.Env = set_env_and_seed(args.env, args.seed)
 
@@ -94,7 +91,7 @@ def main(args) -> None:
     max_action = float(env.action_space.high[0])
 
     replay_buffer: ReplayBuffer = ReplayBuffer(
-        DefaultParams.MAX_TIMESTEPS,
+        int(DefaultParams.MAX_TIMESTEPS),
         state_dim,
         action_dim,
         DefaultParams.NORM_EPSILON,

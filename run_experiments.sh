@@ -1,10 +1,5 @@
 #!/bin/bash
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/holden_babineaux/.mujoco/mujoco210/bin
-python3 main.py
-
-# Script to reproduce results
-
 envs=(
     "halfcheetah-random-v0"
     "hopper-random-v0"
