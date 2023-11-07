@@ -29,9 +29,6 @@ class ReplayBuffer(object):
         self.not_done = np.zeros((max_steps, 1)).reshape(-1, 1)
 
         self.norm_epsilon = norm_epsilon
-        # Buffer position will allow us to round-robin
-        # through the replay states
-        self.buffer_position = 0
         self.size = 0
 
     def random_sample(self, batch_size: int):

@@ -1,16 +1,16 @@
 import os
-from pathlib import Path
 import gym
 import numpy as np
 import torch
 import d4rl
+from pathlib import Path
 
 from utils import DefaultParams
 from replay_buffer import ReplayBuffer
 from TD3_BC import TD3_BC
 
 
-def set_seeds(env_name: str, seed: int) -> gym.Env:
+def set_env_and_seed(env_name: str, seed: int) -> gym.Env:
     env: gym.Env = gym.make(env_name)
     env.seed(seed)
     env.action_space.seed(seed)
@@ -55,9 +55,9 @@ def eval_policy(
 
 
 def train_policy(
-    policy: TD3_BC, replay_buffer: ReplayBuffer, mean, std
+    policy: TD3_BC, replay_buffer: ReplayBuffer, mean, std, args
 ) -> None:
-    results_filename = f"TD3_BC_{DefaultParams.GYM_ENV}_{DefaultParams.SEED}"
+    results_filename = f"TD3_BC_{args.env}_{args.seed}"
 
     evaluations = []
     for ts in range(int(DefaultParams.MAX_TIMESTEPS)):
@@ -69,8 +69,8 @@ def train_policy(
             evaluations.append(
                 eval_policy(
                     policy,
-                    DefaultParams.GYM_ENV,
-                    DefaultParams.SEED,
+                    args.env,
+                    args.seed,
                     mean,
                     std,
                 )
@@ -81,19 +81,12 @@ def train_policy(
 # TODO add a flag to capture the duration of each training & output .npy
 
 
-def main() -> None:
-    # Sets the env seeds for gym/torch/numpy
-    env: gym.Env = set_seeds(DefaultParams.GYM_ENV, DefaultParams.SEED)
+def main(args) -> None:
+    env: gym.Env = set_env_and_seed(args.env, args.seed)
 
     results = Path("./results")
-    models = Path("./models")
-
-    # Create output directories if they do not already exist
     if not Path("./results").exists():
         os.makedirs(results)
-
-    if not Path("./models").exists():
-        os.makedirs(models)
 
     # Environment state/action space
     state_dim = env.observation_space.shape[0]
@@ -115,11 +108,18 @@ def main() -> None:
         **DefaultParams.to_td3_bc_kwargs(state_dim, action_dim, max_action)
     )
 
-    train_policy(policy, replay_buffer, mean, std)
+    train_policy(policy, replay_buffer, mean, std, args)
 
     env.close()
     return 0
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--env", default=DefaultParams.GYM_ENV, type=str)
+    parser.add_argument("--seed", default=DefaultParams.SEED, type=int)
+    args = parser.parse_args()
+
+    main(args)
