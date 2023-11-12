@@ -54,6 +54,8 @@ As mentioned in the details, the datasets used are [OpenAI gym 0.17.0](https://g
 
 Please cite the primary authors if any code is used or referenced.
 
+#### TD3+BC Reference & Paper
+
 ```bibtex
 
 @inproceedings{fujimoto2021minimalist,
@@ -61,6 +63,45 @@ Please cite the primary authors if any code is used or referenced.
  author={Scott Fujimoto and Shixiang Shane Gu},
  booktitle={Thirty-Fifth Conference on Neural Information Processing Systems},
  year={2021},
+}
+
+```
+
+#### TD3 (Online Algorithm) Reference & Paper
+
+```bibtex
+
+@inproceedings{fujimoto2018addressing,
+  title={Addressing Function Approximation Error in Actor-Critic Methods},
+  author={Fujimoto, Scott and Hoof, Herke and Meger, David},
+  booktitle={International Conference on Machine Learning},
+  pages={1582--1591},
+  year={2018}
+}
+
+```
+
+#### Batch-Constrained Deep Q-Learning (BCQ) References & Papers
+
+```bibtex
+
+@inproceedings{fujimoto2019off,
+  title={Off-Policy Deep Reinforcement Learning without Exploration},
+  author={Fujimoto, Scott and Meger, David and Precup, Doina},
+  booktitle={International Conference on Machine Learning},
+  pages={2052--2062},
+  year={2019}
+}
+
+```
+
+```bibtex
+
+@article{fujimoto2019benchmarking,
+  title={Benchmarking Batch Deep Reinforcement Learning Algorithms},
+  author={Fujimoto, Scott and Conti, Edoardo and Ghavamzadeh, Mohammad and Pineau, Joelle},
+  journal={arXiv preprint arXiv:1910.01708},
+  year={2019}
 }
 
 ```
