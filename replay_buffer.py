@@ -1,15 +1,8 @@
 import torch
 import numpy as np
+from typing_extensions import Self
 
-from utils import DEVICE
-
-
-class D4RLDatasetKeys:
-    STATE = "observations"
-    ACTIONS = "actions"
-    NEXT_STATE = "next_observations"
-    REWARD = "rewards"
-    NOT_DONE = "terminals"
+from utils import DEVICE, D4RLDatasetKeys, StateUtils
 
 
 class ReplayBuffer(object):
@@ -27,6 +20,8 @@ class ReplayBuffer(object):
         self.not_done = np.zeros((max_steps, 1)).reshape(-1, 1)
         self.norm_epsilon = norm_epsilon
         self.size = 0
+        self.mean = 0
+        self.std = 0
 
     def random_sample(self, batch_size: int):
         rand_index = np.random.randint(0, self.size, size=batch_size)
@@ -38,19 +33,17 @@ class ReplayBuffer(object):
             torch.FloatTensor(self.not_done[rand_index]).to(DEVICE),
         )
 
-    def norm(self) -> (float, float):
-        mean = self.state.mean(0, keepdims=True)
-        # epis is a small normalization constant. This is commonly
-        # used in many deep RL algorithms
-        std = self.state.std(0, keepdims=True) + self.norm_epsilon
-        self.state = (self.state - mean) / std
-        self.next_state = (self.next_state - mean) / std
-        return (mean, std)
-
-    def states_from_D4RL_dataset(self, dataset) -> None:
+    def init_states_from_D4RL_dataset(self, dataset) -> Self:
         self.state = dataset[D4RLDatasetKeys.STATE]
         self.action = dataset[D4RLDatasetKeys.ACTIONS]
         self.next_state = dataset[D4RLDatasetKeys.NEXT_STATE]
         self.reward = dataset[D4RLDatasetKeys.REWARD].reshape(-1, 1)
         self.not_done = 1.0 - dataset[D4RLDatasetKeys.NOT_DONE].reshape(-1, 1)
         self.size = self.state.shape[0]
+
+        # Always normalize states
+        (self.mean, self.std) = StateUtils.normalize(
+            self.state, self.next_state
+        )
+
+        return self

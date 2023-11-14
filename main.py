@@ -9,6 +9,10 @@ from replay_buffer import ReplayBuffer
 from TD3_BC import TD3_BC
 
 
+# TODO save models for each env
+RESULTS_DIR = "./results"
+
+
 def set_env_and_seed(env_name: str, seed: int) -> gym.Env:
     env: gym.Env = gym.make(env_name)
     env.reset(seed=seed)
@@ -17,6 +21,12 @@ def set_env_and_seed(env_name: str, seed: int) -> gym.Env:
     np.random.seed(seed)
 
     return env
+
+
+def setup_output_dirs():
+    results = Path(RESULTS_DIR)
+    if not Path(RESULTS_DIR).exists():
+        os.makedirs(results)
 
 
 def fmt_output(eval_episodes, avg_reward, d4rl_score) -> None:
@@ -53,9 +63,7 @@ def eval_policy(
     return d4rl_score
 
 
-def train_policy(
-    policy: TD3_BC, replay_buffer: ReplayBuffer, mean, std, args
-) -> None:
+def train_policy(policy: TD3_BC, replay_buffer: ReplayBuffer, args) -> None:
     results_filename = f"TD3_BC_{args.env}_{args.seed}"
 
     evaluations = []
@@ -70,43 +78,41 @@ def train_policy(
                     policy,
                     args.env,
                     args.seed,
-                    mean,
-                    std,
+                    replay_buffer.mean,
+                    replay_buffer.std,
                 )
             )
-            np.save(f"./results/{results_filename}", evaluations)
+
+            np.save(Path(RESULTS_DIR, results_filename), evaluations)
+
+
+def extract_state_action_space(env: gym.Env):
+    # Environment state/action space
+    return (
+        env.observation_space.shape[0],
+        env.action_space.shape[0],
+        float(env.action_space.high[0]),
+    )
 
 
 def main(args) -> None:
+    setup_output_dirs()
     env: gym.Env = set_env_and_seed(args.env, args.seed)
-
-    results = Path("./results")
-    if not Path("./results").exists():
-        os.makedirs(results)
-
-    # Environment state/action space
-    state_dim = env.observation_space.shape[0]
-    action_dim = env.action_space.shape[0]
-    max_action = float(env.action_space.high[0])
+    (state_dim, action_dim, max_action) = extract_state_action_space(env)
 
     replay_buffer: ReplayBuffer = ReplayBuffer(
         int(DefaultParams.MAX_TIMESTEPS),
         state_dim,
         action_dim,
         DefaultParams.NORM_EPSILON,
-    )
-
-    replay_buffer.states_from_D4RL_dataset(d4rl.qlearning_dataset(env))
-
-    # Always normalize states
-    mean, std = replay_buffer.norm()
+    ).init_states_from_D4RL_dataset(d4rl.qlearning_dataset(env))
 
     # Init TD3+BC policy with default params
     policy = TD3_BC(
         **DefaultParams.to_td3_bc_kwargs(state_dim, action_dim, max_action)
     )
 
-    train_policy(policy, replay_buffer, mean, std, args)
+    train_policy(policy, replay_buffer, args)
 
     env.close()
     return 0

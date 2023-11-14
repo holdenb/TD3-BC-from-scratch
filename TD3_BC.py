@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils import DEVICE
+from utils import DEVICE, DefaultParams
 from replay_buffer import ReplayBuffer
 
 
@@ -70,14 +70,14 @@ class TD3_BC(object):
         state_dim,
         action_dim,
         max_action,
-        discount=0.99,
-        tau=0.005,
-        policy_noise=0.2,
-        noise_clip=0.5,
-        policy_freq=2,
-        alpha=2.5,
-        actor_opt_lr=3e-4,
-        critic_opt_lr=3e-4,
+        discount=DefaultParams.DISCOUNT_FACTOR,
+        tau=DefaultParams.TAU,
+        policy_noise=DefaultParams.POLICY_NOISE,
+        noise_clip=DefaultParams.NOISE_CLIP_RANGE,
+        policy_freq=DefaultParams.POLICY_UPDATE_FREQ,
+        alpha=DefaultParams.ALPHA,
+        actor_opt_lr=DefaultParams.ACTOR_OPT_LR,
+        critic_opt_lr=DefaultParams.CRITIC_OPT_LR,
     ):
         # Note: state_dim = env.observation_space
         # Note: action_dim = env.action_space
@@ -157,7 +157,9 @@ class TD3_BC(object):
         self.actor_optimizer.step()
 
     # TODO try upping the batch_size after original experiments
-    def train(self, replay_buffer: ReplayBuffer, batch_size=256):
+    def train(
+        self, replay_buffer: ReplayBuffer, batch_size=DefaultParams.BATCH_SIZE
+    ):
         self.total_it += 1
 
         # Sample the replay buffer using the mini-batch size,
