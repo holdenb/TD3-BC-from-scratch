@@ -184,14 +184,13 @@ class TD3_BC(object):
             # action space
             target_Q = reward + not_done * self.discount * target_Q
 
-            # Get current Q estimates
-            current_Q1, current_Q2 = self.critic(state, action)
+        # Get current Q estimates
+        current_Q1, current_Q2 = self.critic(state, action)
 
-            # Compute critic loss & optimize
-            self.optimize_critic(
-                F.mse_loss(current_Q1, target_Q)
-                + F.mse_loss(current_Q2, target_Q)
-            )
+        # Compute critic loss & optimize
+        self.optimize_critic(
+            F.mse_loss(current_Q1, target_Q) + F.mse_loss(current_Q2, target_Q)
+        )
 
         # Delayed policy updates: see https://arxiv.org/abs/1802.09477
         # Only update the actor & target critic network every d iterations
