@@ -50,6 +50,14 @@ Results can be visualized using the provided notebook `TD3_BC_results.ipynb`. Th
 
 As mentioned in the details, the datasets used are [OpenAI gym 0.17.0](https://github.com/openai/gym) with the [D4RL datasets](https://github.com/rail-berkeley/d4rl). Offline RL utilizes batch-constrained learning, so on a given run a single batch is acquired from the gym environment and used throughout testing and training. The results are then evaluated using the D4RL metrics.
 
+## TODO
+
+- [ ] Add dockerfile for easy reproduction of the experiments
+- [ ] Fix args to allow for model saving & hyperparam tuning
+- [ ] Add option for internally benchmarking each evaluation phase (save to npy similar to D4RL scores)
+- [ ] Update to use [Gymnasium MuJoCu](https://gymnasium.farama.org/environments/mujoco/) and re-validate the DR4L scores against new envs
+- [ ] Eval on Pusher, Reacher, Swimmer, and Humanoid envs -- How do these compare to the original baselines on the v1 tasks?
+
 ### BibTex
 
 Please cite the primary authors if any code is used or referenced.
