@@ -52,11 +52,13 @@ As mentioned in the details, the datasets used are [OpenAI gym 0.17.0](https://g
 
 ## TODO
 
+- [ ] Run v2 envs and compare against paper v0 baselines
 - [ ] Add dockerfile for easy reproduction of the experiments
 - [ ] Fix args to allow for model saving & hyperparam tuning
 - [ ] Add option for internally benchmarking each evaluation phase (save to npy similar to D4RL scores)
-- [ ] Update to use [Gymnasium MuJoCu](https://gymnasium.farama.org/environments/mujoco/) and re-validate the DR4L scores against new envs
-- [ ] Eval on Pusher, Reacher, Swimmer, and Humanoid envs -- How do these compare to the original baselines on the v1 tasks?
+- [ ] Update to use [Gymnasium-Robotics](https://gymnasium.farama.org/environments/mujoco/) and
+[Minari](https://github.com/Farama-Foundation/Minari). D4RL is planning to support Minari.
+- [ ] Replicate the [D4RL normalized score](https://github.com/Farama-Foundation/D4RL/blob/71a9549f2091accff93eeff68f1f3ab2c0e0a288/d4rl/offline_env.py#L71) for the Minari envs
 
 ### BibTex
 

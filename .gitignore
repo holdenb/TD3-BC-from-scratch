@@ -162,3 +162,7 @@ cython_debug/
 # VS Code
 *.code-workspace
 *.vscode
+
+# Project
+**/results
+**/models

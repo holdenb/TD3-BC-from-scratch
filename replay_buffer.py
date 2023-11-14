@@ -44,7 +44,7 @@ class ReplayBuffer(object):
         # used in many deep RL algorithms
         std = self.state.std(0, keepdims=True) + self.norm_epsilon
         self.state = (self.state - mean) / std
-
+        self.next_state = (self.next_state - mean) / std
         return (mean, std)
 
     def states_from_D4RL_dataset(self, dataset) -> None:

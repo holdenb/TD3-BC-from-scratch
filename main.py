@@ -1,10 +1,9 @@
 import os
-import gym
-import numpy as np
 import torch
 import d4rl
+import gym
+import numpy as np
 from pathlib import Path
-
 from utils import DefaultParams
 from replay_buffer import ReplayBuffer
 from TD3_BC import TD3_BC
@@ -12,7 +11,7 @@ from TD3_BC import TD3_BC
 
 def set_env_and_seed(env_name: str, seed: int) -> gym.Env:
     env: gym.Env = gym.make(env_name)
-    env.seed(seed)
+    env.reset(seed=seed)
     env.action_space.seed(seed)
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -34,7 +33,7 @@ def eval_policy(
 ) -> float:
     eval_env = gym.make(env_name)
     # fixed seed for the environment
-    eval_env.seed(seed + seed_offset)
+    eval_env.reset(seed=seed + seed_offset)
 
     avg_reward = 0.0
     # evaluate over the given number of episodes
@@ -60,12 +59,12 @@ def train_policy(
     results_filename = f"TD3_BC_{args.env}_{args.seed}"
 
     evaluations = []
-    for ts in range(int(DefaultParams.MAX_TIMESTEPS)):
+    for step in range(int(DefaultParams.MAX_TIMESTEPS)):
         policy.train(replay_buffer, DefaultParams.BATCH_SIZE)
         # Evaluate episode at each interval according to the
         # evaluation frequency
-        if (ts + 1) % DefaultParams.EVAL_FREQ == 0:
-            print(f"Time steps: {ts+1}")
+        if (step + 1) % DefaultParams.EVAL_FREQ == 0:
+            print(f"Time steps: {step+1}")
             evaluations.append(
                 eval_policy(
                     policy,
