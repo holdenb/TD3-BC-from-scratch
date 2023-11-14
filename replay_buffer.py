@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-import utils
+from utils import DEVICE
 
 
 class D4RLDatasetKeys:
@@ -22,27 +22,21 @@ class ReplayBuffer(object):
     ):
         self.state = np.zeros((max_steps, state_dim))
         self.action = np.zeros((max_steps, action_dim))
-
         self.next_state = np.zeros((max_steps, state_dim))
-
         self.reward = np.zeros((max_steps, 1)).reshape(-1, 1)
         self.not_done = np.zeros((max_steps, 1)).reshape(-1, 1)
-
         self.norm_epsilon = norm_epsilon
         self.size = 0
 
     def random_sample(self, batch_size: int):
         rand_index = np.random.randint(0, self.size, size=batch_size)
-        sample = [
-            torch.FloatTensor(self.state[rand_index]),
-            torch.FloatTensor(self.action[rand_index]),
-            torch.FloatTensor(self.next_state[rand_index]),
-            torch.FloatTensor(self.reward[rand_index]),
-            torch.FloatTensor(self.not_done[rand_index]),
-        ]
-        utils.move_to_device_ol_list(sample)
-
-        return sample
+        return (
+            torch.FloatTensor(self.state[rand_index]).to(DEVICE),
+            torch.FloatTensor(self.action[rand_index]).to(DEVICE),
+            torch.FloatTensor(self.next_state[rand_index]).to(DEVICE),
+            torch.FloatTensor(self.reward[rand_index]).to(DEVICE),
+            torch.FloatTensor(self.not_done[rand_index]).to(DEVICE),
+        )
 
     def norm(self) -> (float, float):
         mean = self.state.mean(0, keepdims=True)
@@ -53,13 +47,10 @@ class ReplayBuffer(object):
 
         return (mean, std)
 
-    def states_from_D4RL_dataset(self, dataset: dict[str, np.ndarray]) -> None:
+    def states_from_D4RL_dataset(self, dataset) -> None:
         self.state = dataset[D4RLDatasetKeys.STATE]
         self.action = dataset[D4RLDatasetKeys.ACTIONS]
-
         self.next_state = dataset[D4RLDatasetKeys.NEXT_STATE]
-
         self.reward = dataset[D4RLDatasetKeys.REWARD].reshape(-1, 1)
         self.not_done = 1.0 - dataset[D4RLDatasetKeys.NOT_DONE].reshape(-1, 1)
-
         self.size = self.state.shape[0]

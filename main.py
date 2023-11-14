@@ -95,7 +95,9 @@ def main(args) -> None:
         state_dim,
         action_dim,
         DefaultParams.NORM_EPSILON,
-    ).states_from_D4RL_dataset(d4rl.qlearning_dataset(env))
+    )
+
+    replay_buffer.states_from_D4RL_dataset(d4rl.qlearning_dataset(env))
 
     # Always normalize states
     mean, std = replay_buffer.norm()

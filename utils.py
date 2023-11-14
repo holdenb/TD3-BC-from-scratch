@@ -1,8 +1,7 @@
 import torch
-from collections import deque
 
 
-__DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class DefaultParams:
@@ -49,13 +48,3 @@ class DefaultParams:
             # TD3 + BC
             "alpha": DefaultParams.ALPHA,
         }
-
-
-def move_to_device_ol_list(
-    tensors,
-) -> None:
-    deque(map(lambda x: move_to_device(x), tensors), maxlen=0)
-
-
-def move_to_device(obj) -> None:
-    obj.to(__DEVICE)

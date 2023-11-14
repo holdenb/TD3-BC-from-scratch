@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-import utils
+from utils import DEVICE
 from replay_buffer import ReplayBuffer
 
 
@@ -83,15 +83,20 @@ class TD3_BC(object):
         # Note: action_dim = env.action_space
         # Note: max_action = maximum values for each dimension of the action
         # space
-        self.actor = utils.move_to_device(
-            Actor(state_dim, action_dim, max_action)
-        )
+
+        # Both actor & critic use Adam optimizer as per the original
+        # paper/implementation
+
+        # Init actor & actor target
+        self.actor = Actor(state_dim, action_dim, max_action).to(DEVICE)
+        # Note: Deepcopy will also put the copy onto the device
         self.actor_target = copy.deepcopy(self.actor)
         self.actor_optimizer = torch.optim.Adam(
             self.actor.parameters(), lr=actor_opt_lr
         )
 
-        self.critic = utils.move_to_device(Critic(state_dim, action_dim))
+        # Init critic & critic target
+        self.critic = Critic(state_dim, action_dim).to(DEVICE)
         self.critic_target = copy.deepcopy(self.critic)
         self.critic_optimizer = torch.optim.Adam(
             self.critic.parameters(), lr=critic_opt_lr
@@ -104,7 +109,6 @@ class TD3_BC(object):
         self.noise_clip = noise_clip
         self.policy_freq = policy_freq
         self.alpha = alpha
-
         self.total_it = 0
 
     def __update_target_model_frozen_params(self, model, model_target):
@@ -117,8 +121,12 @@ class TD3_BC(object):
 
     def select_action(self, state):
         # Need to temporarily move to GPU before sending to the actor network
-        state = utils.move_to_device(torch.FloatTensor(state.reshape(1, -1)))
-        return self.actor(state).cpu().data.numpy().flatten()
+        return (
+            self.actor(torch.FloatTensor(state.reshape(1, -1)).to(DEVICE))
+            .cpu()
+            .data.numpy()
+            .flatten()
+        )
 
     def select_next_action(self, next_state, current_action):
         return (
@@ -148,6 +156,7 @@ class TD3_BC(object):
         actor_loss.backward()
         self.actor_optimizer.step()
 
+    # TODO try upping the batch_size after original experiments
     def train(self, replay_buffer: ReplayBuffer, batch_size=256):
         self.total_it += 1
 
