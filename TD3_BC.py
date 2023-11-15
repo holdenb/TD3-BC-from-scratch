@@ -202,7 +202,7 @@ class TD3_BC(object):
             # policy (pi)
             pi = self.actor(state)
             Q = self.critic.Q1(state, pi)
-            # Note: we do not care about the
+
             lmbda = self.alpha / Q.abs().mean().detach()
 
             # Compute actor loss & optimize
