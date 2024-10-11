@@ -34,18 +34,6 @@ This script is directly referenced from the original implementation. This is nee
 
 To visualize results, the `TD3_BC_results.ipynb` can be used to plot the normalized DR4L scores at each time step. The script should overlay runs of each environment. The `num_eval_per_scenario` parameter can be modified according to how many runs were produced per scenario i.e. `[hopper-random-v0, hopper-medium-v0, hopper-expert-v0]` would be `3` evaluations for the `hopper` scenario.
 
-## Code References
-
-`main.py` is our own rewritten setup implementation. `fmt_output` is shared in the evaluation of D4RL metrics. The original implementation is referenced for `eval_policy`, however some performance enhancements were added that simplify evaluation. This implementation utilizes a much simpler startup and partitions out the environment seeding and the evaluation.
-
-`replay_buffer.py` is heavily referenced from the original by Fujimoto et al. in the original TD3+BC implementation, however we have stripped out the unnecessary functions that were used for online training. Also some parameters relating to round-robin choosing of random samples from the batch were removed due to that being unnecessary in offline training, since we only get one batch per run.
-
-`TD3_BC.py` utilizes the same actor/critic as the original, however we have increased the hidden layer size to 400 and 300 nodes respectively (up from 256), while keeping the incoming batch size fixed at 256. Our implementation has functioned out a lot of necessary components used in the `train` method (`select_action`, `compute_noise`, etc.). We were also able to simplify the training step to use less memory (hold less tensors in memory at once) and reduce the excess copying of tensors.
-
-`utils.py` references the main repository for the defaults and default hyperparameters. The structure of the code and utility methods are all new for this implementation.
-
-Results can be visualized using the provided notebook `TD3_BC_results.ipynb`. This is our custom script to visualize results produced in the `/results` directory.
-
 ## Datasets
 
 As mentioned in the details, the datasets used are [OpenAI gym 0.17.0](https://github.com/openai/gym) with the [D4RL datasets](https://github.com/rail-berkeley/d4rl). Offline RL utilizes batch-constrained learning, so on a given run a single batch is acquired from the gym environment and used throughout training and evaluation. The results are evaluated using the D4RL normalized scores and are based on each specific MuJoCu task.
